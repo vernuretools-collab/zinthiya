@@ -125,97 +125,135 @@ export default function VolunteerProfile() {
 
   return (
     <VolunteerLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 sm:space-y-6">
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-            <p className="text-gray-600 mt-1">Manage your volunteer information</p>
+            <h1 className="text-xl sm:text-3xl md:text-3xl font-bold text-gray-900">
+              My Profile
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
+              Manage your volunteer information
+            </p>
           </div>
           {!editing && (
-            <Button onClick={() => setEditing(true)}>
+            <Button 
+              onClick={() => setEditing(true)}
+              className="w-full sm:w-auto text-sm sm:text-base h-10 sm:h-11"
+            >
               <User className="mr-2 h-4 w-4" />
               Edit Profile
             </Button>
           )}
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Profile Information</CardTitle>
+        {/* Profile Information Card */}
+        <Card className="border-0 shadow-md">
+          <CardHeader className="p-4 sm:p-5 md:p-6">
+            <CardTitle className="text-lg sm:text-xl md:text-2xl">
+              Profile Information
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center space-x-6">
-              <Avatar className="h-24 w-24">
+          <CardContent className="p-4 sm:p-5 md:p-6 pt-0 space-y-5 sm:space-y-6">
+            {/* Avatar & Basic Info */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+              <Avatar className="h-20 w-20 sm:h-24 sm:w-24 ring-4 ring-blue-100">
                 <AvatarImage src={volunteer?.profile_image_url} />
-                <AvatarFallback className="text-2xl">
+                <AvatarFallback className="text-xl sm:text-2xl bg-blue-600 text-white">
                   {volunteer?.full_name?.split(' ').map(n => n[0]).join('')}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <h3 className="text-xl font-semibold">{volunteer?.full_name}</h3>
-                <p className="text-gray-600">{volunteer?.email}</p>
-                <div className="flex items-center space-x-2 mt-2">
-                  <Badge variant={volunteer?.is_verified ? 'default' : 'secondary'}>
+              <div className="flex-1">
+                <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
+                  {volunteer?.full_name}
+                </h3>
+                <p className="text-sm sm:text-base text-gray-600 break-all">
+                  {volunteer?.email}
+                </p>
+                <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-3">
+                  <Badge 
+                    variant={volunteer?.is_verified ? 'default' : 'secondary'}
+                    className="text-xs"
+                  >
                     {volunteer?.is_verified ? '✓ Verified' : 'Pending Verification'}
                   </Badge>
-                  <Badge variant={volunteer?.is_active ? 'default' : 'secondary'}>
+                  <Badge 
+                    variant={volunteer?.is_active ? 'default' : 'secondary'}
+                    className="text-xs"
+                  >
                     {volunteer?.is_active ? 'Active' : 'Inactive'}
                   </Badge>
                 </div>
               </div>
             </div>
 
+            {/* Editing Mode */}
             {editing ? (
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="full_name">Full Name</Label>
+              <div className="space-y-4 sm:space-y-5">
+                {/* Full Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="full_name" className="text-sm sm:text-base font-semibold">
+                    Full Name
+                  </Label>
                   <Input
                     id="full_name"
                     value={editedData.full_name}
                     onChange={(e) => setEditedData({ ...editedData, full_name: e.target.value })}
+                    className="h-10 sm:h-11 text-sm sm:text-base"
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="phone">Phone Number</Label>
+                {/* Phone */}
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-sm sm:text-base font-semibold">
+                    Phone Number
+                  </Label>
                   <Input
                     id="phone"
                     type="tel"
                     value={editedData.phone}
                     onChange={(e) => setEditedData({ ...editedData, phone: e.target.value })}
+                    className="h-10 sm:h-11 text-sm sm:text-base"
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="bio">Bio</Label>
+                {/* Bio */}
+                <div className="space-y-2">
+                  <Label htmlFor="bio" className="text-sm sm:text-base font-semibold">
+                    Bio
+                  </Label>
                   <Textarea
                     id="bio"
                     value={editedData.bio}
                     onChange={(e) => setEditedData({ ...editedData, bio: e.target.value })}
                     maxLength={200}
+                    className="text-sm sm:text-base min-h-[100px]"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs sm:text-sm text-gray-500">
                     {editedData.bio?.length || 0}/200 characters
                   </p>
                 </div>
 
-                <div>
-                  <Label className="mb-3 block">Support Categories</Label>
-                  <div className="grid grid-cols-2 gap-3">
+                {/* Support Categories */}
+                <div className="space-y-3">
+                  <Label className="text-sm sm:text-base font-semibold block">
+                    Support Categories
+                  </Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                     {Object.entries(SUPPORT_CATEGORIES).map(([key, category]) => (
                       <button
                         key={key}
                         type="button"
                         onClick={() => toggleArrayItem('support_categories', key)}
                         className={`
-                          p-3 rounded-lg border-2 text-left transition-all
+                          p-3 sm:p-4 rounded-lg border-2 text-left transition-all duration-200
                           ${editedData.support_categories.includes(key)
-                            ? 'border-blue-600 bg-blue-50'
-                            : 'border-gray-200 hover:border-blue-300'
+                            ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-300'
+                            : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
                           }
                         `}
                       >
-                        <span className="text-sm font-medium">
+                        <span className="text-xs sm:text-sm md:text-base font-medium">
                           {category.icon} {category.label}
                         </span>
                       </button>
@@ -223,8 +261,11 @@ export default function VolunteerProfile() {
                   </div>
                 </div>
 
-                <div>
-                  <Label className="mb-3 block">Languages</Label>
+                {/* Languages */}
+                <div className="space-y-3">
+                  <Label className="text-sm sm:text-base font-semibold block">
+                    Languages
+                  </Label>
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(LANGUAGES).map(([code, lang]) => (
                       <button
@@ -232,10 +273,11 @@ export default function VolunteerProfile() {
                         type="button"
                         onClick={() => toggleArrayItem('languages', code)}
                         className={`
-                          px-4 py-2 rounded-full border-2 transition-all
+                          px-3 py-2 sm:px-4 sm:py-2.5 rounded-full border-2 transition-all duration-200
+                          text-xs sm:text-sm font-medium
                           ${editedData.languages.includes(code)
-                            ? 'border-blue-600 bg-blue-50'
-                            : 'border-gray-200 hover:border-blue-300'
+                            ? 'border-blue-600 bg-blue-50 ring-2 ring-blue-300'
+                            : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/50'
                           }
                         `}
                       >
@@ -245,7 +287,8 @@ export default function VolunteerProfile() {
                   </div>
                 </div>
 
-                <div className="flex space-x-3 pt-4 border-t">
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
                   <Button
                     variant="outline"
                     onClick={() => {
@@ -259,10 +302,15 @@ export default function VolunteerProfile() {
                       });
                     }}
                     disabled={saving}
+                    className="w-full sm:flex-1 h-11 sm:h-12 text-sm sm:text-base"
                   >
                     Cancel
                   </Button>
-                  <Button onClick={handleSaveProfile} disabled={saving}>
+                  <Button 
+                    onClick={handleSaveProfile} 
+                    disabled={saving}
+                    className="w-full sm:flex-1 h-11 sm:h-12 text-sm sm:text-base"
+                  >
                     {saving ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -278,22 +326,32 @@ export default function VolunteerProfile() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
+              /* View Mode */
+              <div className="space-y-4 sm:space-y-5">
                 <div>
-                  <Label>Phone</Label>
-                  <p className="text-gray-700">{volunteer?.phone || 'Not provided'}</p>
+                  <Label className="text-sm sm:text-base font-semibold">Phone</Label>
+                  <p className="text-sm sm:text-base text-gray-700 mt-1">
+                    {volunteer?.phone || 'Not provided'}
+                  </p>
                 </div>
 
                 <div>
-                  <Label>Bio</Label>
-                  <p className="text-gray-700">{volunteer?.bio}</p>
+                  <Label className="text-sm sm:text-base font-semibold">Bio</Label>
+                  <p className="text-sm sm:text-base text-gray-700 mt-1 leading-relaxed">
+                    {volunteer?.bio}
+                  </p>
                 </div>
 
                 <div>
-                  <Label>Support Categories</Label>
+                  <Label className="text-sm sm:text-base font-semibold">
+                    Support Categories
+                  </Label>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {volunteer?.support_categories?.map((cat) => (
-                      <Badge key={cat} className={SUPPORT_CATEGORIES[cat]?.color}>
+                      <Badge 
+                        key={cat} 
+                        className={`${SUPPORT_CATEGORIES[cat]?.color} text-xs`}
+                      >
                         {SUPPORT_CATEGORIES[cat]?.icon} {SUPPORT_CATEGORIES[cat]?.label}
                       </Badge>
                     ))}
@@ -301,10 +359,10 @@ export default function VolunteerProfile() {
                 </div>
 
                 <div>
-                  <Label>Languages</Label>
+                  <Label className="text-sm sm:text-base font-semibold">Languages</Label>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {volunteer?.languages?.map((lang) => (
-                      <Badge key={lang} variant="outline">
+                      <Badge key={lang} variant="outline" className="text-xs">
                         {LANGUAGES[lang]?.flag} {LANGUAGES[lang]?.label}
                       </Badge>
                     ))}
@@ -315,60 +373,83 @@ export default function VolunteerProfile() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Change Password</CardTitle>
+        {/* Change Password Card */}
+        <Card className="border-0 shadow-md">
+          <CardHeader className="p-4 sm:p-5 md:p-6">
+            <CardTitle className="text-lg sm:text-xl md:text-2xl">
+              Change Password
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="newPassword">New Password</Label>
+          <CardContent className="p-4 sm:p-5 md:p-6 pt-0 space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="newPassword" className="text-sm sm:text-base font-semibold">
+                New Password
+              </Label>
               <Input
                 id="newPassword"
                 type="password"
                 value={passwordData.newPassword}
                 onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                 placeholder="At least 8 characters"
+                className="h-10 sm:h-11 text-sm sm:text-base"
               />
             </div>
 
-            <div>
-              <Label htmlFor="confirmPassword">Confirm New Password</Label>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-sm sm:text-base font-semibold">
+                Confirm New Password
+              </Label>
               <Input
                 id="confirmPassword"
                 type="password"
                 value={passwordData.confirmPassword}
                 onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                className="h-10 sm:h-11 text-sm sm:text-base"
               />
             </div>
 
-            <Button onClick={handleChangePassword}>
+            <Button 
+              onClick={handleChangePassword}
+              className="w-full sm:w-auto h-10 sm:h-11 text-sm sm:text-base"
+            >
               <Lock className="mr-2 h-4 w-4" />
               Change Password
             </Button>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Statistics</CardTitle>
+        {/* Statistics Card */}
+        <Card className="border-0 shadow-md">
+          <CardHeader className="p-4 sm:p-5 md:p-6">
+            <CardTitle className="text-lg sm:text-xl md:text-2xl">
+              Statistics
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-4 text-center">
+          <CardContent className="p-4 sm:p-5 md:p-6 pt-0">
+            <div className="grid grid-cols-3 gap-3 sm:gap-4 md:gap-6 text-center">
               <div>
-                <p className="text-2xl font-bold text-blue-600">{volunteer?.total_sessions || 0}</p>
-                <p className="text-sm text-gray-600">Total Sessions</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600">
+                  {volunteer?.total_sessions || 0}
+                </p>
+                <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                  Total Sessions
+                </p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600">
                   {volunteer?.average_rating?.toFixed(1) || '0.0'}
                 </p>
-                <p className="text-sm text-gray-600">Average Rating</p>
+                <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                  Average Rating
+                </p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600">
                   {volunteer?.created_at ? new Date(volunteer.created_at.seconds * 1000).getFullYear() : 'N/A'}
                 </p>
-                <p className="text-sm text-gray-600">Member Since</p>
+                <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                  Member Since
+                </p>
               </div>
             </div>
           </CardContent>

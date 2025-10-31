@@ -116,8 +116,11 @@ export default function TimeSelection() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 animate-spin text-indigo-500" />
+          <p className="text-slate-600 text-sm sm:text-base">Loading availability...</p>
+        </div>
       </div>
     );
   }
@@ -125,72 +128,88 @@ export default function TimeSelection() {
   const days = getDaysInMonth();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-16 sm:pt-20">
       <SOSButton />
       
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
+        <div className="max-w-6xl mx-auto">
+          {/* Header Section */}
+          <div className="mb-6 sm:mb-8 text-center px-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 mb-2 sm:mb-3 leading-tight">
               Choose Your Appointment Time
             </h1>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-600">
               Select a date and time that works for you
             </p>
           </div>
 
+          {/* Volunteer Card - Responsive */}
           {volunteer && (
-            <Card className="mb-8">
-              <CardContent className="py-4">
-                <div className="flex items-center space-x-4">
-                  <Avatar className="h-16 w-16">
+            <Card className="mb-6 sm:mb-8 border-0 shadow-md sm:shadow-lg bg-gradient-to-r from-blue-100 to-indigo-100">
+              <CardContent className="p-3 sm:p-4 md:p-5">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <Avatar className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 shadow-md ring-4 ring-indigo-100 flex-shrink-0">
                     <AvatarImage src={volunteer.profile_image_url} />
-                    <AvatarFallback>
+                    <AvatarFallback className="bg-gradient-to-br from-indigo-400 to-blue-500 text-white text-sm sm:text-base md:text-lg font-bold">
                       {volunteer.full_name.split(' ').map(n => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h3 className="font-semibold text-lg">{volunteer.full_name}</h3>
-                    <p className="text-sm text-gray-600">Your selected volunteer</p>
+                    <h3 className="font-bold text-base sm:text-lg md:text-xl text-slate-800">
+                      {volunteer.full_name}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 font-medium">
+                      Your selected volunteer
+                    </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Select Date</CardTitle>
-                <CardDescription>
+          {/* Main Content - Responsive Two-Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+            {/* Calendar Card */}
+            <Card className="border-0 shadow-md sm:shadow-lg bg-white">
+              <CardHeader className="p-4 sm:p-5 md:p-6">
+                <CardTitle className="text-base sm:text-lg md:text-xl text-slate-800 flex items-center gap-2">
+                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 flex-shrink-0" />
+                  <span>Select Date</span>
+                </CardTitle>
+                <CardDescription className="text-xs sm:text-sm text-slate-600">
                   Choose a date within the next 30 days
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="mb-4 flex justify-between items-center">
+              <CardContent className="p-4 sm:p-5 md:p-6 pt-0">
+                {/* Month Navigation */}
+                <div className="mb-4 flex justify-between items-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentMonth(addDays(currentMonth, -30))}
+                    className="border-2 border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2"
                   >
-                    Previous
+                    Prev
                   </Button>
-                  <span className="font-semibold">
+                  <span className="font-bold text-slate-800 text-sm sm:text-base md:text-lg">
                     {format(currentMonth, 'MMMM yyyy')}
                   </span>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentMonth(addDays(currentMonth, 30))}
+                    className="border-2 border-slate-300 hover:bg-slate-100 text-slate-700 font-semibold text-xs sm:text-sm px-2 sm:px-3 py-1.5 sm:py-2"
                   >
                     Next
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-7 gap-2">
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className="text-center text-sm font-medium text-gray-600">
-                      {day}
+                {/* Calendar Grid */}
+                <div className="grid grid-cols-7 gap-1 sm:gap-2">
+                  {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, idx) => (
+                    <div key={idx} className="text-center text-xs sm:text-sm font-bold text-slate-700 pb-1 sm:pb-2">
+                      <span className="hidden sm:inline">{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][idx]}</span>
+                      <span className="sm:hidden">{day}</span>
                     </div>
                   ))}
                   {days.map((day, index) => {
@@ -203,9 +222,9 @@ export default function TimeSelection() {
                         onClick={() => available && setSelectedDate(day)}
                         disabled={!available}
                         className={`
-                          p-2 text-sm rounded-md transition-all
-                          ${available ? 'hover:bg-blue-100 cursor-pointer' : 'text-gray-300 cursor-not-allowed'}
-                          ${selected ? 'bg-blue-600 text-white font-bold' : ''}
+                          p-1.5 sm:p-2 md:p-2.5 text-xs sm:text-sm rounded-md sm:rounded-lg transition-all font-medium
+                          ${available ? 'hover:bg-indigo-100 hover:scale-105 sm:hover:scale-110 cursor-pointer text-slate-700' : 'text-slate-300 cursor-not-allowed'}
+                          ${selected ? 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white font-bold shadow-md scale-105 sm:scale-110' : ''}
                         `}
                       >
                         {format(day, 'd')}
@@ -214,27 +233,31 @@ export default function TimeSelection() {
                   })}
                 </div>
 
-                <p className="text-xs text-gray-500 mt-4">
+                <p className="text-xs text-slate-500 mt-3 sm:mt-4 text-center bg-slate-50 p-2 rounded-lg">
                   All times shown in UK timezone (GMT/BST)
                 </p>
               </CardContent>
             </Card>
 
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Available Times</CardTitle>
-                  <CardDescription>
+            {/* Right Column - Time Slots & Consultation Type */}
+            <div className="space-y-4 sm:space-y-6">
+              {/* Available Times Card */}
+              <Card className="border-0 shadow-md sm:shadow-lg bg-white">
+                <CardHeader className="p-4 sm:p-5 md:p-6">
+                  <CardTitle className="text-base sm:text-lg md:text-xl text-slate-800">
+                    Available Times
+                  </CardTitle>
+                  <CardDescription className="text-xs sm:text-sm text-slate-600">
                     {selectedDate 
-                      ? `Times for ${format(selectedDate, 'EEEE, MMMM d')}`
+                      ? `Times for ${format(selectedDate, 'EEEE, MMM d')}`
                       : 'Select a date to see available times'
                     }
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-4 sm:p-5 md:p-6 pt-0">
                   {selectedDate ? (
                     availableSlots.length > 0 ? (
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 gap-2">
                         {availableSlots.map((slot, index) => (
                           <Button
                             key={index}
@@ -242,68 +265,78 @@ export default function TimeSelection() {
                             size="sm"
                             onClick={() => setSelectedTime(slot.time)}
                             disabled={!slot.available}
+                            className={`font-semibold text-xs sm:text-sm p-2 sm:p-2.5 ${
+                              selectedTime === slot.time
+                                ? 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow-md'
+                                : 'border-2 border-indigo-200 hover:bg-indigo-50 text-slate-700'
+                            }`}
                           >
                             {slot.time}
                           </Button>
                         ))}
                       </div>
                     ) : (
-                      <p className="text-gray-500 text-center py-8">
+                      <p className="text-slate-500 text-center py-6 sm:py-8 italic text-sm">
                         No available slots for this date
                       </p>
                     )
                   ) : (
-                    <p className="text-gray-500 text-center py-8">
+                    <p className="text-slate-500 text-center py-6 sm:py-8 italic text-sm">
                       Please select a date first
                     </p>
                   )}
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Consultation Type</CardTitle>
-                  <CardDescription>
+              {/* Consultation Type Card */}
+              <Card className="border-0 shadow-md sm:shadow-lg bg-white">
+                <CardHeader className="p-4 sm:p-5 md:p-6">
+                  <CardTitle className="text-base sm:text-lg md:text-xl text-slate-800">
+                    Consultation Type
+                  </CardTitle>
+                  <CardDescription className="text-xs sm:text-sm text-slate-600">
                     How would you like to have your session?
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="p-4 sm:p-5 md:p-6 pt-0 space-y-2 sm:space-y-3">
+                  {/* Phone Option */}
                   <button
                     onClick={() => setConsultationType('phone')}
                     className={`
-                      w-full p-4 rounded-lg border-2 text-left transition-all
+                      w-full p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 text-left transition-all duration-300
                       ${consultationType === 'phone' 
-                        ? 'border-blue-600 bg-blue-50' 
-                        : 'border-gray-200 hover:border-blue-300'
+                        ? 'border-indigo-400 bg-gradient-to-r from-indigo-50 to-blue-50 shadow-md ring-2 ring-indigo-300' 
+                        : 'border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50'
                       }
                     `}
                   >
-                    <div className="flex items-center space-x-3">
-                      <Phone className="h-5 w-5 text-blue-600" />
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <Phone className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600 flex-shrink-0" />
                       <div>
-                        <p className="font-semibold">Phone Call</p>
-                        <p className="text-sm text-gray-600">
+                        <p className="font-bold text-sm sm:text-base text-slate-800">Phone Call</p>
+                        <p className="text-xs sm:text-sm text-slate-600">
                           We'll call you at your number
                         </p>
                       </div>
                     </div>
                   </button>
 
+                  {/* In-Person Option */}
                   <button
                     onClick={() => setConsultationType('in_person')}
                     className={`
-                      w-full p-4 rounded-lg border-2 text-left transition-all
+                      w-full p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 text-left transition-all duration-300
                       ${consultationType === 'in_person' 
-                        ? 'border-blue-600 bg-blue-50' 
-                        : 'border-gray-200 hover:border-blue-300'
+                        ? 'border-indigo-400 bg-gradient-to-r from-indigo-50 to-blue-50 shadow-md ring-2 ring-indigo-300' 
+                        : 'border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50'
                       }
                     `}
                   >
-                    <div className="flex items-center space-x-3">
-                      <MapPin className="h-5 w-5 text-blue-600" />
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <MapPin className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600 flex-shrink-0" />
                       <div>
-                        <p className="font-semibold">In-Person</p>
-                        <p className="text-sm text-gray-600">{OFFICE_ADDRESS}</p>
+                        <p className="font-bold text-sm sm:text-base text-slate-800">In-Person</p>
+                        <p className="text-xs sm:text-sm text-slate-600 break-words">{OFFICE_ADDRESS}</p>
                       </div>
                     </div>
                   </button>
@@ -312,13 +345,44 @@ export default function TimeSelection() {
             </div>
           </div>
 
-          <div className="flex justify-between mt-8">
-            <Button variant="outline" onClick={() => navigate('/booking/select-volunteer')}>
+          {/* Helper Text */}
+          {(!selectedDate || !selectedTime || !consultationType) && (
+            <p className="text-center text-slate-500 text-xs sm:text-sm mt-4 sm:mt-6 px-4">
+              {!selectedDate && "Please select a date to continue"}
+              {selectedDate && !selectedTime && "Please select a time slot"}
+              {selectedDate && selectedTime && !consultationType && "Please choose a consultation type"}
+            </p>
+          )}
+
+          {/* Navigation Buttons */}
+          <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 mt-6 sm:mt-8 px-2 sm:px-0">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/booking/select-volunteer')}
+              className="w-full sm:w-auto order-2 sm:order-1
+                        border-2 border-slate-300 hover:bg-slate-100 hover:border-slate-400
+                        text-slate-700 font-semibold 
+                        px-6 py-5 sm:px-8 sm:py-6
+                        text-base sm:text-lg
+                        transition-all duration-300
+                        shadow-sm hover:shadow-md"
+            >
               Back
             </Button>
             <Button 
               onClick={handleNext}
               disabled={!selectedDate || !selectedTime || !consultationType}
+              className={`w-full sm:w-auto order-1 sm:order-2
+                        font-bold 
+                        px-6 py-5 sm:px-8 sm:py-6
+                        text-base sm:text-lg
+                        transition-all duration-300
+                        rounded-md
+                        ${
+                          selectedDate && selectedTime && consultationType
+                            ? 'bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white shadow-md hover:shadow-xl scale-100 hover:scale-105'
+                            : 'bg-slate-300 text-slate-500 cursor-not-allowed shadow-sm'
+                        }`}
             >
               Next
             </Button>

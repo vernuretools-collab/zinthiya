@@ -8,7 +8,8 @@ import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../../components/ui/dialog';
 import VolunteerLayout from '../../components/volunteer/VolunteerLayout';
-import { Calendar, Phone, MapPin, Search, Clock, CheckCircle, XCircle } from 'lucide-react';
+import CalendarView from '../../components/volunteer/CalendarView';
+import { Calendar, Phone, MapPin, Search, Clock, CheckCircle, XCircle, List, Calendar as CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { SUPPORT_CATEGORIES, maskPhoneNumber } from '../../lib/utils';
 
@@ -20,6 +21,7 @@ export default function VolunteerBookings() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState('list');
 
   useEffect(() => {
     if (!auth.currentUser) {
@@ -107,6 +109,11 @@ export default function VolunteerBookings() {
     );
   };
 
+  const getStatusCount = (status) => {
+    if (status === 'all') return bookings.length;
+    return bookings.filter(b => b.status === status).length;
+  };
+
   if (loading) {
     return (
       <VolunteerLayout>
@@ -119,200 +126,301 @@ export default function VolunteerBookings() {
 
   return (
     <VolunteerLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6 ">
+        {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Bookings</h1>
-          <p className="text-gray-600 mt-1">Manage your appointments</p>
+          <h1 className="text-xl sm:text-3xl md:text-3xl  font-bold text-gray-900">
+            My Bookings
+          </h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">
+            Manage your appointments
+          </p>
         </div>
 
-        <Card>
-          <CardContent className="py-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search by reference or name..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border rounded-md"
-              >
-                <option value="all">All Status</option>
-                <option value="upcoming">Upcoming</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-                <option value="no_show">No Show</option>
-              </select>
-
-              <Button variant="outline" onClick={() => {
-                setSearchTerm('');
-                setStatusFilter('all');
-              }}>
-                Clear Filters
-              </Button>
+        {/* Status Filter Tabs */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-0">
+            <div className="flex border-b overflow-x-auto scrollbar-hide">
+              {[
+                { key: 'all', label: 'All Bookings' },
+                { key: 'upcoming', label: 'Upcoming' },
+                { key: 'completed', label: 'Completed' },
+                { key: 'cancelled', label: 'Cancelled' }
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setStatusFilter(tab.key)}
+                  className={`flex-1 min-w-[100px] cursor-pointer sm:min-w-[120px] px-3 sm:px-4 md:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors relative ${
+                    statusFilter === tab.key
+                      ? 'text-blue-600 bg-blue-50'
+                      : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex flex-col items-center space-y-1">
+                    <span className="text-center">{tab.label}</span>
+                    <span className="text-xs font-normal">
+                      ({getStatusCount(tab.key)})
+                    </span>
+                  </div>
+                  {statusFilter === tab.key && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
+                  )}
+                </button>
+              ))}
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{filteredBookings.length} Bookings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {filteredBookings.length === 0 ? (
-              <div className="text-center py-12">
-                <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">No bookings found</p>
+        {/* Search Bar */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search by reference or name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 h-10 sm:h-11 text-sm sm:text-base"
+                />
               </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredBookings.map((booking) => (
-                  <Card
-                    key={booking.id}
-                    className="cursor-pointer hover:shadow-md transition-shadow"
-                    onClick={() => setSelectedBooking(booking)}
-                  >
-                    <CardContent className="py-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            {getStatusBadge(booking.status)}
-                            <Badge className={SUPPORT_CATEGORIES[booking.support_category]?.color}>
-                              {SUPPORT_CATEGORIES[booking.support_category]?.icon}{' '}
-                              {SUPPORT_CATEGORIES[booking.support_category]?.label}
-                            </Badge>
-                          </div>
-
-                          <p className="font-semibold text-lg mb-1">
-                            {booking.booking_reference}
-                          </p>
-
-                          <div className="space-y-1 text-sm text-gray-600">
-                            <div className="flex items-center space-x-2">
-                              <Calendar className="h-4 w-4" />
-                              <span>
-                                {format(booking.start_time.toDate(), 'EEEE, MMMM d, yyyy')}
-                              </span>
-                            </div>
-
-                            <div className="flex items-center space-x-2">
-                              <Clock className="h-4 w-4" />
-                              <span>
-                                {format(booking.start_time.toDate(), 'h:mm a')} - 
-                                {format(booking.end_time.toDate(), ' h:mm a')}
-                              </span>
-                            </div>
-
-                            <div className="flex items-center space-x-2">
-                              {booking.consultation_type === 'phone' ? (
-                                <>
-                                  <Phone className="h-4 w-4" />
-                                  <span>Phone Call</span>
-                                </>
-                              ) : (
-                                <>
-                                  <MapPin className="h-4 w-4" />
-                                  <span>In-Person</span>
-                                </>
-                              )}
-                            </div>
-
-                            <p>Client: {booking.victim_name}</p>
-                          </div>
-                        </div>
-
-                        <Button size="sm">View Details</Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+              {searchTerm && (
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSearchTerm('')}
+                  className="h-10 sm:h-11 text-sm sm:text-base"
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
+
+        {/* View Toggle */}
+        <div className="flex justify-end">
+          <div className="inline-flex rounded-lg border-2 border-gray-200 p-1">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5 sm:gap-2 ${
+                viewMode === 'list'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <List className="h-4 w-4" />
+              <span className="hidden sm:inline">List View</span>
+            </button>
+            <button
+              onClick={() => setViewMode('calendar')}
+              className={`px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5 sm:gap-2 ${
+                viewMode === 'calendar'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <CalendarIcon className="h-4 w-4" />
+              <span className="hidden sm:inline">Calendar View</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Conditional Rendering: Calendar or List */}
+        {viewMode === 'calendar' ? (
+          <CalendarView 
+            bookings={filteredBookings}
+            onBookingClick={setSelectedBooking}
+          />
+        ) : (
+          <Card className="border-0 shadow-md">
+            <CardHeader className="p-4 sm:p-5 md:p-6">
+              <CardTitle className="text-lg sm:text-xl md:text-2xl">
+                {filteredBookings.length} Booking{filteredBookings.length !== 1 ? 's' : ''}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-3 sm:p-4 md:p-6 pt-0">
+              {filteredBookings.length === 0 ? (
+                <div className="text-center py-8 sm:py-12">
+                  <Calendar className="h-10 w-10 sm:h-12 sm:w-12 text-gray-300 mx-auto mb-3 sm:mb-4" />
+                  <p className="text-sm sm:text-base text-gray-500">
+                    No bookings found
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3 sm:space-y-4">
+                  {filteredBookings.map((booking) => (
+                    <Card
+                      key={booking.id}
+                      className="cursor-pointer hover:shadow-lg transition-shadow border-l-4 border-l-blue-600"
+                      onClick={() => setSelectedBooking(booking)}
+                    >
+                      <CardContent className="p-3 sm:p-4 md:p-5">
+                        <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4">
+                          <div className="flex-1 w-full sm:w-auto">
+                            {/* Badges */}
+                            <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-3">
+                              {getStatusBadge(booking.status)}
+                              <Badge className={`${SUPPORT_CATEGORIES[booking.support_category]?.color} text-xs`}>
+                                {SUPPORT_CATEGORIES[booking.support_category]?.icon}{' '}
+                                {SUPPORT_CATEGORIES[booking.support_category]?.label}
+                              </Badge>
+                            </div>
+
+                            {/* Reference */}
+                            <p className="font-semibold text-base sm:text-lg md:text-xl mb-2 break-all">
+                              {booking.booking_reference}
+                            </p>
+
+                            {/* Details */}
+                            <div className="space-y-1 sm:space-y-1.5 text-xs sm:text-sm text-gray-600">
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                                <span className="break-words">
+                                  {format(booking.start_time.toDate(), 'EEEE, MMMM d, yyyy')}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <Clock className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                                <span>
+                                  {format(booking.start_time.toDate(), 'h:mm a')} - 
+                                  {format(booking.end_time.toDate(), ' h:mm a')}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                {booking.consultation_type === 'phone' ? (
+                                  <>
+                                    <Phone className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                                    <span>Phone Call</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                                    <span>In-Person</span>
+                                  </>
+                                )}
+                              </div>
+
+                              <p className="font-medium">Client: {booking.victim_name}</p>
+                            </div>
+                          </div>
+
+                          {/* View Details Button */}
+                          <Button 
+                            size="sm" 
+                            className="w-full sm:w-auto text-xs sm:text-sm h-9 sm:h-10"
+                          >
+                            View Details
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
 
-      {/* Booking Details Dialog */}
+      {/* Booking Details Dialog - Responsive */}
       <Dialog open={!!selectedBooking} onOpenChange={() => setSelectedBooking(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Booking Details</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg sm:text-xl md:text-2xl pr-8">
+              Booking Details
+            </DialogTitle>
+            <DialogDescription className="text-xs sm:text-sm break-all">
               Reference: {selectedBooking?.booking_reference}
             </DialogDescription>
           </DialogHeader>
 
           {selectedBooking && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4 sm:space-y-5 md:space-y-6">
+              {/* Status & Type Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Status</p>
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1.5 sm:mb-2">
+                    Status
+                  </p>
                   {getStatusBadge(selectedBooking.status)}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Support Type</p>
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1.5 sm:mb-2">
+                    Support Type
+                  </p>
                   <Badge className={SUPPORT_CATEGORIES[selectedBooking.support_category]?.color}>
                     {SUPPORT_CATEGORIES[selectedBooking.support_category]?.label}
                   </Badge>
                 </div>
               </div>
 
+              {/* Date & Time */}
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">Date & Time</p>
-                <p className="font-semibold">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1.5 sm:mb-2">
+                  Date & Time
+                </p>
+                <p className="font-semibold text-sm sm:text-base">
                   {format(selectedBooking.start_time.toDate(), 'EEEE, MMMM d, yyyy')}
                 </p>
-                <p className="text-gray-600">
+                <p className="text-xs sm:text-sm text-gray-600">
                   {format(selectedBooking.start_time.toDate(), 'h:mm a')} - 
                   {format(selectedBooking.end_time.toDate(), ' h:mm a')}
                 </p>
               </div>
 
+              {/* Consultation Type */}
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">Consultation Type</p>
-                <div className="flex items-center space-x-2">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1.5 sm:mb-2">
+                  Consultation Type
+                </p>
+                <div className="flex items-center gap-2">
                   {selectedBooking.consultation_type === 'phone' ? (
                     <>
-                      <Phone className="h-5 w-5 text-blue-600" />
-                      <span>Phone Call</span>
+                      <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
+                      <span className="text-sm sm:text-base">Phone Call</span>
                     </>
                   ) : (
                     <>
-                      <MapPin className="h-5 w-5 text-blue-600" />
-                      <span>In-Person Meeting</span>
+                      <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
+                      <span className="text-sm sm:text-base">In-Person Meeting</span>
                     </>
                   )}
                 </div>
               </div>
 
+              {/* Client Information */}
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">Client Information</p>
-                <p className="font-semibold">{selectedBooking.victim_name}</p>
-                <p className="text-gray-600">
+                <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1.5 sm:mb-2">
+                  Client Information
+                </p>
+                <p className="font-semibold text-sm sm:text-base">{selectedBooking.victim_name}</p>
+                <p className="text-xs sm:text-sm text-gray-600 break-all">
                   Phone: {maskPhoneNumber(selectedBooking.victim_phone)}
                 </p>
-                <p className="text-gray-600">Language: {selectedBooking.preferred_language}</p>
+                <p className="text-xs sm:text-sm text-gray-600">
+                  Language: {selectedBooking.preferred_language}
+                </p>
               </div>
 
+              {/* Client Note */}
               {selectedBooking.victim_note && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Client Note</p>
-                  <p className="text-gray-700 bg-gray-50 p-3 rounded-md">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1.5 sm:mb-2">
+                    Client Note
+                  </p>
+                  <p className="text-xs sm:text-sm text-gray-700 bg-gray-50 p-3 rounded-md leading-relaxed">
                     {selectedBooking.victim_note}
                   </p>
                 </div>
               )}
 
+              {/* Action Buttons */}
               {selectedBooking.status === 'upcoming' && (
-                <div className="flex space-x-3 pt-4 border-t">
+                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
                   <Button
-                    className="flex-1"
+                    className="flex-1 text-sm sm:text-base h-11 sm:h-12"
                     onClick={() => updateBookingStatus(selectedBooking.id, 'completed')}
                   >
                     <CheckCircle className="mr-2 h-4 w-4" />
@@ -320,7 +428,7 @@ export default function VolunteerBookings() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="flex-1"
+                    className="flex-1 text-sm sm:text-base h-11 sm:h-12"
                     onClick={() => updateBookingStatus(selectedBooking.id, 'no_show')}
                   >
                     <XCircle className="mr-2 h-4 w-4" />

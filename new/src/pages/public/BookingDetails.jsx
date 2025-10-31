@@ -43,7 +43,6 @@ export default function BookingDetails() {
     setSubmitting(true);
 
     try {
-      // Generate unique booking reference
       const bookingReference = `ZT-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
 
       console.log('Creating booking with data:', {
@@ -55,7 +54,6 @@ export default function BookingDetails() {
         end_time: bookingData.end_time
       });
 
-      // Create booking directly in Firestore
       const bookingRef = await addDoc(collection(db, 'bookings'), {
         booking_reference: bookingReference,
         volunteer_id: bookingData.volunteer_id,
@@ -75,7 +73,6 @@ export default function BookingDetails() {
 
       console.log('Booking created successfully:', bookingRef.id);
 
-      // Update store with confirmation data
       setBookingData({
         ...bookingData,
         booking_reference: bookingReference,
@@ -87,10 +84,8 @@ export default function BookingDetails() {
         victim_note: formData.victim_note
       });
 
-      // Navigate to confirmation page
       navigate('/booking/confirmation');
 
-      // Reset store after a delay
       setTimeout(() => {
         resetBookingData();
       }, 1000);
@@ -109,44 +104,61 @@ export default function BookingDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 pt-16 sm:pt-20">
       <SOSButton />
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-2xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Your Details</h1>
-            <p className="text-gray-600">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
+        <div className="max-w-3xl mx-auto">
+          {/* Header Section */}
+          <div className="mb-6 sm:mb-8 text-center px-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 mb-2 sm:mb-3 leading-tight">
+              Your Details
+            </h1>
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-600">
               Please provide your contact information
             </p>
           </div>
 
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Booking Summary</CardTitle>
+          {/* Booking Summary Card */}
+          <Card className="mb-4 sm:mb-6 border-0 shadow-md sm:shadow-lg bg-gradient-to-r from-blue-100 to-indigo-100">
+            <CardHeader className="p-4 sm:p-5 md:p-6 pb-2 sm:pb-3">
+              <CardTitle className="text-lg sm:text-xl md:text-2xl text-slate-800">
+                Booking Summary
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 text-sm">
-              <p>
-                <strong>Date:</strong> {bookingData.start_time && format(new Date(bookingData.start_time), 'EEEE, MMMM d, yyyy')}
+            <CardContent className="p-4 sm:p-5 md:p-6 pt-2 sm:pt-3 space-y-1.5 sm:space-y-2">
+              <p className="text-xs sm:text-sm md:text-base text-slate-700 font-medium">
+                <strong className="text-indigo-700">Date:</strong>{' '}
+                {bookingData.start_time && format(new Date(bookingData.start_time), 'EEEE, MMMM d, yyyy')}
               </p>
-              <p>
-                <strong>Time:</strong> {bookingData.start_time && format(new Date(bookingData.start_time), 'h:mm a')} - {bookingData.end_time && format(new Date(bookingData.end_time), 'h:mm a')}
+              <p className="text-xs sm:text-sm md:text-base text-slate-700 font-medium">
+                <strong className="text-indigo-700">Time:</strong>{' '}
+                {bookingData.start_time && format(new Date(bookingData.start_time), 'h:mm a')} -{' '}
+                {bookingData.end_time && format(new Date(bookingData.end_time), 'h:mm a')}
               </p>
-              <p>
-                <strong>Type:</strong> {bookingData.consultation_type === 'phone' ? 'Phone Call' : 'In-Person'}
+              <p className="text-xs sm:text-sm md:text-base text-slate-700 font-medium">
+                <strong className="text-indigo-700">Type:</strong>{' '}
+                {bookingData.consultation_type === 'phone' ? 'Phone Call' : 'In-Person'}
               </p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="pt-6">
-              <form onSubmit={onSubmit} className="space-y-6">
-                <div>
-                  <Label htmlFor="victim_name">
-                    <User className="inline h-4 w-4 mr-2" />
-                    Full Name *
+          {/* Main Form Card */}
+          <Card className="border-0 shadow-md sm:shadow-lg bg-white">
+            <CardContent className="p-4 sm:p-5 md:p-6 lg:p-8 pt-4 sm:pt-5 md:pt-6">
+              <form onSubmit={onSubmit} className="space-y-4 sm:space-y-5 md:space-y-6">
+                
+                {/* Full Name Field */}
+                <div className="space-y-2">
+                  <Label 
+                    htmlFor="victim_name" 
+                    className="text-slate-700 font-semibold text-sm sm:text-base flex items-center gap-2"
+                  >
+                    <User className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600 flex-shrink-0" />
+                    <span>Full Name *</span>
                   </Label>
                   <Input
+                    className="border-2 border-indigo-200 focus:border-indigo-400 focus:ring-indigo-400 bg-indigo-50/50 text-sm sm:text-base h-11 sm:h-12"
                     id="victim_name"
                     type="text"
                     placeholder="Enter your full name"
@@ -156,12 +168,17 @@ export default function BookingDetails() {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="victim_email">
-                    <Mail className="inline h-4 w-4 mr-2" />
-                    Email Address *
+                {/* Email Field */}
+                <div className="space-y-2">
+                  <Label 
+                    htmlFor="victim_email" 
+                    className="text-slate-700 font-semibold text-sm sm:text-base flex items-center gap-2"
+                  >
+                    <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
+                    <span>Email Address *</span>
                   </Label>
                   <Input
+                    className="border-2 border-blue-200 focus:border-blue-400 focus:ring-blue-400 bg-blue-50/50 text-sm sm:text-base h-11 sm:h-12"
                     id="victim_email"
                     type="email"
                     placeholder="your.email@example.com"
@@ -169,46 +186,58 @@ export default function BookingDetails() {
                     onChange={(e) => handleChange('victim_email', e.target.value)}
                     required
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs sm:text-sm text-slate-600 ml-1">
                     We'll send your confirmation to this email
                   </p>
                 </div>
 
-                <div>
-                  <Label htmlFor="victim_phone">
-                    <Phone className="inline h-4 w-4 mr-2" />
-                    Phone Number *
+                {/* Phone Number Field */}
+                <div className="space-y-2">
+                  <Label 
+                    htmlFor="victim_phone" 
+                    className="text-slate-700 font-semibold text-sm sm:text-base flex items-center gap-2"
+                  >
+                    <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 flex-shrink-0" />
+                    <span>Phone Number *</span>
                   </Label>
                   <Input
+                    className="border-2 border-emerald-200 focus:border-emerald-400 focus:ring-emerald-400 bg-emerald-50/50 text-sm sm:text-base h-11 sm:h-12"
                     id="victim_phone"
                     type="tel"
-                    placeholder=""
+                    placeholder="+1234567890"
                     value={formData.victim_phone}
                     onChange={(e) => handleChange('victim_phone', e.target.value)}
                     pattern="^\+?[1-9]\d{1,14}$"
                     title="Please enter a valid international phone number (e.g., +1234567890, +447123456789)"
                     required
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs sm:text-sm text-slate-600 ml-1">
                     Include country code (e.g., +44 for UK, +1 for US, +91 for India)
                   </p>
                 </div>
 
-                <div>
-                  <Label htmlFor="preferred_language">
-                    <Globe className="inline h-4 w-4 mr-2" />
-                    Preferred Language *
+                {/* Preferred Language Field */}
+                <div className="space-y-2">
+                  <Label 
+                    htmlFor="preferred_language" 
+                    className="text-slate-700 font-semibold text-sm sm:text-base flex items-center gap-2"
+                  >
+                    <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-violet-600 flex-shrink-0" />
+                    <span>Preferred Language *</span>
                   </Label>
                   <Select
                     value={formData.preferred_language}
                     onValueChange={(value) => handleChange('preferred_language', value)}
                   >
-                    <SelectTrigger id="preferred_language">
+                    <SelectTrigger 
+                      id="preferred_language" 
+                      className="border-2 border-violet-200 focus:border-violet-400 focus:ring-violet-400 bg-violet-50/50 text-sm sm:text-base h-11 sm:h-12"
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.entries(LANGUAGES).map(([code, lang]) => (
-                        <SelectItem key={code} value={code}>
+                        <SelectItem key={code} value={code} className="text-sm sm:text-base">
                           {lang.flag} {lang.label}
                         </SelectItem>
                       ))}
@@ -216,12 +245,17 @@ export default function BookingDetails() {
                   </Select>
                 </div>
 
-                <div>
-                  <Label htmlFor="victim_note">
-                    <MessageSquare className="inline h-4 w-4 mr-2" />
-                    Additional Notes (Optional)
+                {/* Additional Notes Field */}
+                <div className="space-y-2">
+                  <Label 
+                    htmlFor="victim_note" 
+                    className="text-slate-700 font-semibold text-sm sm:text-base flex items-center gap-2"
+                  >
+                    <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 text-rose-600 flex-shrink-0" />
+                    <span>Additional Notes (Optional)</span>
                   </Label>
                   <Textarea
+                    className="border-2 border-rose-200 focus:border-rose-400 focus:ring-rose-400 bg-rose-50/50 text-sm sm:text-base min-h-[100px] sm:min-h-[120px]"
                     id="victim_note"
                     placeholder="Is there anything specific you'd like the volunteer to know?"
                     value={formData.victim_note}
@@ -229,36 +263,52 @@ export default function BookingDetails() {
                     maxLength={500}
                     rows={4}
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs sm:text-sm text-slate-600 ml-1">
                     {formData.victim_note.length}/500 characters
                   </p>
                 </div>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-sm text-gray-700">
-                    <strong>Privacy Notice:</strong> Your information will be kept confidential and only shared with your assigned volunteer. We take your privacy seriously.
+                {/* Privacy Notice */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-indigo-200 rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm">
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    <strong className="text-indigo-700">Privacy Notice:</strong> Your information will be kept confidential and only shared with your assigned volunteer. We take your privacy seriously.
                   </p>
                 </div>
 
-                <div className="flex space-x-4 pt-4">
+                {/* Form Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => navigate('/booking/select-time')}
-                    className="flex-1"
+                    className="w-full sm:flex-1 order-2 sm:order-1
+                              border-2 border-slate-300 hover:bg-slate-100 hover:border-slate-400
+                              text-slate-700 font-semibold
+                              h-12 sm:h-14
+                              text-sm sm:text-base md:text-lg
+                              transition-all duration-300
+                              shadow-sm hover:shadow-md"
                     disabled={submitting}
                   >
                     Back
                   </Button>
                   <Button
                     type="submit"
-                    className="flex-1"
+                    className="w-full sm:flex-1 order-1 sm:order-2
+                              bg-gradient-to-r from-indigo-500 to-blue-600 
+                              hover:from-indigo-600 hover:to-blue-700 
+                              text-white font-bold 
+                              h-12 sm:h-14
+                              text-sm sm:text-base md:text-lg
+                              shadow-md hover:shadow-xl 
+                              transition-all duration-300
+                              disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled={submitting}
                   >
                     {submitting ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Confirming...
+                        <Loader2 className="mr-2 h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                        <span>Confirming...</span>
                       </>
                     ) : (
                       'Confirm Booking'
@@ -269,9 +319,10 @@ export default function BookingDetails() {
             </CardContent>
           </Card>
 
-          <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <p className="text-sm text-gray-700">
-              💡 <strong>Note:</strong> After booking, you'll receive a confirmation with all the details. Please save this for your records.
+          {/* Info Notice */}
+          <div className="mt-4 sm:mt-6 bg-gradient-to-r from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-lg sm:rounded-xl p-3 sm:p-4 shadow-sm">
+            <p className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">
+              💡 <strong className="text-amber-700">Note:</strong> After booking, you'll receive a confirmation with all the details. Please save this for your records.
             </p>
           </div>
         </div>
