@@ -3,6 +3,7 @@ import { Button } from '../../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
 import SOSButton from '../../components/shared/SOSButton';
 import { Shield, Heart, Phone, Calendar } from 'lucide-react';
+import zinthiya from "../../assets/zinthiya.jpg"
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -16,12 +17,15 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 py-3 sm:py-4 md:py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <Heart className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 text-blue-600 flex-shrink-0" />
+              {/* <Heart className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 text-blue-600 flex-shrink-0" />
               <div>
                 <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-900 leading-tight">
                   Zinthiya
                 </h1>
                 <p className="text-xs sm:text-sm text-gray-600">Leicester, UK</p>
+              </div> */}
+              <div className='h-10 w-20 sm:h-8 sm:w-8 md:h-10 md:w-30' >
+                <img src={zinthiya} alt="" className='w-[100%] h-10' />
               </div>
             </div>
           </div>

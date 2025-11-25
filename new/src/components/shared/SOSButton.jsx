@@ -18,10 +18,10 @@ export default function SOSButton() {
   return (
     <Button
       onClick={handleEmergencyCall}
-      className="fixed top-4 right-4 z-50 bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg
-                 sm:top-4 sm:right-4 sm:px-4 sm:py-2 sm:text-base
+      className="fixed top-4 right-4 z-90 bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg
+                 sm:top-6 sm:right-4 sm:px-4 sm:py-2 sm:text-base
                  md:px-6 md:py-3 md:text-lg
-                 px-3 py-2 text-sm
+                 px-2 py-0 text-sm
                  flex items-center justify-center"
       size="default"
     >
